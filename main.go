@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/tomanta/gator/internal/config"
 )
@@ -9,18 +10,18 @@ import (
 func main() {
 	cfg, err := config.Read()
 	if err != nil {
-		fmt.Printf("Error reading: %v", err)
+		log.Fatalf("Error reading config: %v\n", err)
 		return
 	}
+	fmt.Printf("Read config: %+v\n", cfg)
 
-	cfg.SetUser("brian")
+	err = cfg.SetUser("brian")
 
-	cfg2, err := config.Read()
-
+	cfg, err = config.Read()
 	if err != nil {
-		fmt.Printf("Error reading 2nd time: %v", err)
+		log.Fatalf("Error reading 2nd time: %v\n", err)
 		return
 	}
 
-	fmt.Printf("%v\n", cfg2)
+	fmt.Printf("Read config again: %+v\n", cfg)
 }
