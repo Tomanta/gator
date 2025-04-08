@@ -1,35 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"log"
-
+	//"fmt"
 	"github.com/tomanta/gator/internal/config"
+	"log"
+	"os"
 )
-
-type state struct {
-	cfg *config.Config
-}
-
-type command struct {
-	name      string
-	arguments []string
-}
-
-func (c *commands) register(name string, f func(*state, command) error) {
-
-}
-
-func (c *commands) run(name string, f func(*state, command) error) {
-
-}
-
-func handlerLogin(s *state, cmd command) error {
-	// If arg's slice is empty, return an error
-	// Use state to access te config struct to set the user to the username, return any errors
-	// Print a message to the terminal that the user has been set
-	return nil
-}
 
 func main() {
 	cfg, err := config.Read()
@@ -37,15 +13,26 @@ func main() {
 		log.Fatalf("Error reading config: %v\n", err)
 		return
 	}
-	fmt.Printf("Read config: %+v\n", cfg)
 
-	err = cfg.SetUser("brian")
-
-	cfg, err = config.Read()
-	if err != nil {
-		log.Fatalf("Error reading 2nd time: %v\n", err)
-		return
+	st := &state{
+		cfg: &cfg,
 	}
 
-	fmt.Printf("Read config again: %+v\n", cfg)
+	cmdList := commands{commandList: map[string]func(*state, command) error{}}
+	cmdList.register("login", handlerLogin)
+
+	args := os.Args
+
+	if len(args) < 2 {
+		log.Fatalf("No command provided")
+	}
+
+	cmd := command{
+		name:      args[1],
+		arguments: args[2:],
+	}
+	err = cmdList.run(st, cmd)
+	if err != nil {
+		log.Fatalf("Error running command!")
+	}
 }
