@@ -1,30 +1,32 @@
 package main
 
 import (
-	//"fmt"
-	"github.com/tomanta/gator/internal/config"
-	"log"
+	"fmt"
 	"os"
+	"github.com/tomanta/gator/internal/config"
 )
 
 func main() {
 	cfg, err := config.Read()
 	if err != nil {
-		log.Fatalf("Error reading config: %v\n", err)
-		return
+		fmt.Printf("Error reading config: %v\n", err)
+		os.Exit(1)
 	}
 
 	st := &state{
 		cfg: &cfg,
 	}
 
-	cmdList := commands{commandList: map[string]func(*state, command) error{}}
+	cmdList := commands{
+		commandList: make(map[string]func(*state, command) error),
+	}
 	cmdList.register("login", handlerLogin)
 
 	args := os.Args
 
 	if len(args) < 2 {
-		log.Fatalf("No command provided")
+		fmt.Printf("Usage: cli <command> [args...]\n")
+		os.Exit(1)
 	}
 
 	cmd := command{
@@ -33,6 +35,7 @@ func main() {
 	}
 	err = cmdList.run(st, cmd)
 	if err != nil {
-		log.Fatalf("Error running command!")
+		fmt.Printf("Error running command: %v\n", err)
+		os.Exit(1)
 	}
 }
