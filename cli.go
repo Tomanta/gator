@@ -3,9 +3,11 @@ package main
 import (
 	"errors"
 	"github.com/tomanta/gator/internal/config"
+	"github.com/tomanta/gator/internal/database"
 )
 
 type state struct {
+	db  *database.Queries
 	cfg *config.Config
 }
 
