@@ -20,12 +20,6 @@ type commands struct {
 	commandList map[string]func(*state, command) error
 }
 
-func getCommands() map[string]func(*state, command) error {
-	return map[string]func(*state, command) error{
-		"login": handlerLogin,
-	}
-}
-
 func (c *commands) register(name string, f func(*state, command) error) {
 	c.commandList[name] = f
 }

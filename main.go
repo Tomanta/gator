@@ -34,6 +34,7 @@ func main() {
 	}
 	cmdList.register("login", handlerLogin)
 	cmdList.register("register", handlerRegister)
+	cmdList.register("reset", handlerReset)
 
 	args := os.Args
 
