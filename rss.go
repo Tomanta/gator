@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/xml"
 	"fmt"
+	"html"
 	"io"
 	"net/http"
 	"time"
-	"html"
 )
 
 type RSSFeed struct {
@@ -60,7 +60,6 @@ func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 		item.Description = html.UnescapeString(item.Description)
 		feed.Channel.Item[i] = item
 	}
-	
 
 	return &feed, nil
 }
