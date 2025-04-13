@@ -9,14 +9,9 @@ import (
 	"github.com/tomanta/gator/internal/database"
 )
 
-func handlerAddFeed(s *state, cmd command) error {
+func handlerAddFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.arguments) != 2 {
 		return fmt.Errorf("usage: %s <name> <url>", cmd.name)
-	}
-
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("Could not get user data: %w\n", err)
 	}
 
 	feedParams := database.CreateFeedParams{
@@ -71,7 +66,7 @@ func handlerListFeeds(s *state, cmd command) error {
 	return nil
 }
 
-func handlerFollowFeed(s *state, cmd command) error {
+func handlerFollowFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.arguments) != 1 {
 		return fmt.Errorf("usage: %s <url>\n", cmd.name)
 	}
@@ -79,11 +74,6 @@ func handlerFollowFeed(s *state, cmd command) error {
 	feed_to_follow, err := getFeedByURL(s, cmd.arguments[0])
 	if err != nil {
 		return fmt.Errorf("Unable to look up feed: %w\n", err)
-	}
-
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("Could not get user data: %w\n", err)
 	}
 
 	feedFollowParams := database.CreateFeedFollowParams{
@@ -106,11 +96,7 @@ func handlerFollowFeed(s *state, cmd command) error {
 	return nil
 }
 
-func handlerListFollowedFeeds(s *state, cmd command) error {
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return fmt.Errorf("Could not get user data: %w\n", err)
-	}
+func handlerListFollowedFeeds(s *state, cmd command, user database.User) error {
 
 	feed_list, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
