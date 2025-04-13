@@ -39,6 +39,8 @@ func main() {
 	cmdList.register("agg", handlerRSSAgg)
 	cmdList.register("addfeed", handlerAddFeed)
 	cmdList.register("feeds", handlerListFeeds)
+	cmdList.register("follow", handlerFollowFeed)
+	cmdList.register("following", handlerListFollowedFeeds)
 
 	args := os.Args
 
