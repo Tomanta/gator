@@ -38,6 +38,7 @@ func main() {
 	cmdList.register("users", handlerListUsers)
 	cmdList.register("agg", handlerRSSAgg)
 	cmdList.register("addfeed", handlerAddFeed)
+	cmdList.register("feeds", handlerListFeeds)
 
 	args := os.Args
 
