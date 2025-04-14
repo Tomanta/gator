@@ -91,8 +91,31 @@ func handlerFollowFeed(s *state, cmd command, user database.User) error {
 
 	fmt.Printf("User %s is now following %s\n", feed_follow.UserName, feed_follow.FeedName)
 
-	// add record to feed_follows for current user (call CreateFeedFollow)
-	// Print name of feed and current user
+	return nil
+}
+
+func handlerUnfollowFeed(s *state, cmd command, user database.User) error {
+	if len(cmd.arguments) != 1 {
+		return fmt.Errorf("usage: %s <url>\n", cmd.name)
+	}
+
+	feed_to_unfollow, err := getFeedByURL(s, cmd.arguments[0])
+	if err != nil {
+		return fmt.Errorf("Unable to look up feed: %w\n", err)
+	}
+
+	deleteFeedFollow := database.DeleteFeedFollowParams{
+		FeedID: feed_to_unfollow.ID,
+		UserID: user.ID,
+	}
+
+	err = s.db.DeleteFeedFollow(context.Background(), deleteFeedFollow)
+	if err != nil {
+		return fmt.Errorf("Could not delete feed follow: %w\n", err)
+	}
+
+	fmt.Printf("User %s is no longer following %s\n", user.Name, feed_to_unfollow.Name)
+
 	return nil
 }
 
