@@ -9,31 +9,36 @@ import (
 )
 
 func scrapeFeeds(s *state) error {
-
 	next_feed, err := s.db.GetNextFeedToFetch(context.Background())
 	if err != nil {
 		return fmt.Errorf("Unable to get next feed: %w", err)
 	}
 
+	return scrapeFeed(s.db, next_feed)
+
+}
+
+func scrapeFeed(db *database.Queries, feed database.GetNextFeedToFetchRow) error {
 	feed_update := database.MarkFeedFetchedParams{
 		LastFetchedAt: sql.NullTime{
 			Time:  time.Now(),
 			Valid: true,
 		},
-		ID: next_feed.ID,
+		ID: feed.ID,
 	}
-	err = s.db.MarkFeedFetched(context.Background(), feed_update)
+	err := db.MarkFeedFetched(context.Background(), feed_update)
 	if err != nil {
 		return fmt.Errorf("Unable to mark feed as fetched: %w", err)
 	}
+	
 
-	feedDetails, err := fetchFeed(context.Background(), next_feed.Url)
+	FeedData, err := fetchFeed(context.Background(), feed.Url)
 	if err != nil {
-		return fmt.Errorf("Unable to fetch feed %s: %w", next_feed.Url, err)
+		return fmt.Errorf("Unable to fetch feed %s: %w", feed.Url, err)
 	}
 
-	fmt.Printf("Feed fetched: %s.\n items:\n", feedDetails.Channel.Title)
-	for _, item := range feedDetails.Channel.Item {
+	fmt.Printf("Feed fetched: %s.\n items:\n", FeedData.Channel.Title)
+	for _, item := range FeedData.Channel.Item {
 		fmt.Printf("%s\n", item.Title)
 	}
 	return nil
