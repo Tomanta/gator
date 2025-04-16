@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"time"
-
+	"strconv"
 	"github.com/google/uuid"
 	"github.com/tomanta/gator/internal/database"
 )
@@ -145,4 +145,35 @@ func getFeedByURL(s *state, url string) (database.GetFeedByURLRow, error) {
 		return database.GetFeedByURLRow{}, fmt.Errorf("Error retrieving feed: %w", err)
 	}
 	return feed, nil
+}
+
+func handlerBrowse(s *state, cmd command, user database.User) error {
+	limit := 2
+	if len(cmd.arguments) == 1 {
+		if customLimit, err := strconv.Atoi(cmd.arguments[0]); err == nil {
+			limit = customLimit
+		} else {
+			return fmt.Errorf("invalid limit: %w", err)
+		}
+	}
+
+	queryParams := database.GetPostsParams {
+		UserID: user.ID,
+		Limit: int32(limit),
+	}
+	posts, err := s.db.GetPosts(context.Background(), queryParams)
+	if err != nil {
+		return fmt.Errorf("Error browsing posts: %w", err)
+	}
+
+	fmt.Printf("%d posts found!\n", len(posts))
+	for _, post := range posts {
+		fmt.Printf("%s\n", post.PublishedAt.Time.Format("Mon Jan 2"))
+		fmt.Printf("--- %s ---\n", post.Title)
+		fmt.Printf("    %v\n", post.Description.String)
+		fmt.Printf("Link: %s\n", post.Url)
+		fmt.Println("=====================================")
+	}
+
+	return nil
 }

@@ -74,7 +74,7 @@ func handlerRSSAgg(s *state, cmd command) error {
 		return fmt.Errorf("Invalid time duration: %w\n", err)
 	}
 
-	fmt.Printf("Collecting feeds every %s", timeBetweenRequests)
+	fmt.Printf("Collecting feeds every %s\n", timeBetweenRequests)
 
 	ticker := time.NewTicker(timeBetweenRequests)
 	for ; ; <-ticker.C {
